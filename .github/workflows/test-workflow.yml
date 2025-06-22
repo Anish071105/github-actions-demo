@@ -2,7 +2,7 @@ name: Daily Commit Workflow
 
 on:
   schedule:
-    - cron: '17 4 * * *'  # Runs daily at 04:17 UTC
+    - cron: '17 4 * * *'
   workflow_dispatch:
   push:
     branches:
@@ -11,17 +11,22 @@ on:
 jobs:
   commit-daily:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true  # ✅ This keeps the token for pushing
 
       - name: Make dummy file update
         run: echo "$(date)" >> daily-log.txt
 
-      - name: 24f1001434@ds.study.iitm.ac.in
+      - name: Commit with email 24f1001434@ds.study.iitm.ac.in
         run: |
           git config user.name "Auto Commit Bot"
           git config user.email "24f1001434@ds.study.iitm.ac.in"
           git add daily-log.txt
-          git commit -m "Daily update: $(date)"
+          git commit -m "Daily update: $(date)" || echo "Nothing to commit"
           git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # ✅ Auth for pushing
