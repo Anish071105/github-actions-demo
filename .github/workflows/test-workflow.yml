@@ -1,19 +1,27 @@
-name: Test Workflow
+name: Daily Commit Workflow
 
 on:
+  schedule:
+    - cron: '17 4 * * *'  # Runs daily at 04:17 UTC
+  workflow_dispatch:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
-  test:
+  commit-daily:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: 24f1001434@ds.study.iitm.ac.in
-        run: echo "Hello, world! My email is 24f1001434@ds.study.iitm.ac.in"
+      - name: Make dummy file update
+        run: echo "$(date)" >> daily-log.txt
 
+      - name: 24f1001434@ds.study.iitm.ac.in
+        run: |
+          git config user.name "Auto Commit Bot"
+          git config user.email "24f1001434@ds.study.iitm.ac.in"
+          git add daily-log.txt
+          git commit -m "Daily update: $(date)"
+          git push
